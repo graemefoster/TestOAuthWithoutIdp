@@ -11,18 +11,19 @@ namespace WellKnownJwtTests;
 public class UnitTest1
 {
     private readonly ITestOutputHelper _testOutputHelper;
+    private readonly ServiceHelper _jwtHelper;
 
     public UnitTest1(ITestOutputHelper testOutputHelper)
     {
         _testOutputHelper = testOutputHelper;
+        _jwtHelper = new ServiceHelper("10508242-aeb3-4f26-8c09-cf4c2eba4ca3");
     }
 
     [Fact]
     public async Task OkWithValidToken()
     {
-        var helper = new ServiceHelper("10508242-aeb3-4f26-8c09-cf4c2eba4ca1");
-        var webFactory = helper.CreateWebApplicationFactory(_testOutputHelper);
-        var token = helper.CreateJwtBuilder()
+        var webFactory = _jwtHelper.CreateWebApplicationFactory(_testOutputHelper);
+        var token = _jwtHelper.CreateJwtBuilder()
             .WithScopes("fish.read")
             .Build();
 
@@ -35,9 +36,8 @@ public class UnitTest1
     [Fact]
     public async Task FailsWithWrongScope()
     {
-        var helper = new ServiceHelper("10508242-aeb3-4f26-8c09-cf4c2eba4ca1");
-        var webFactory = helper.CreateWebApplicationFactory(_testOutputHelper);
-        var token = helper.CreateJwtBuilder()
+        var webFactory = _jwtHelper.CreateWebApplicationFactory(_testOutputHelper);
+        var token = _jwtHelper.CreateJwtBuilder()
             .WithScopes("fish.write")
             .Build();
 
