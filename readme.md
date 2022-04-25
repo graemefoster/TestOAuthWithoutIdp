@@ -20,5 +20,29 @@ The test code adds a ```HttpMessageHandler``` into the Http Pipeline that the ``
 
 This allows the test code to mint tokens that look and feel like the real tokens issued by your IdP, but are signed and produced in-memory.
 
+Now you can write code like this to test your APIs:
 
+```c#
+    [Fact]
+    public async Task FailsWithWrongScope()
+    {
+        //Adds in the custom discovery endpoint / keys HttpMessageHandler
+        var webFactory = _jwtHelper.CreateWebApplicationFactory(_testOutputHelper);
+        
+        //Mints a JWT token with the scope fish.write. Fluent API allows you to adapt the token as necessary
+        var token = _jwtHelper.CreateJwtBuilder()
+            .WithScopes("fish.write")
+            .Build();
+
+        var client = webFactory.CreateClient();
+        
+        //Attach the JWT to your request
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var result = await client.GetAsync("/");
+        
+        //Assert
+        result.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+    }
+
+```
 
